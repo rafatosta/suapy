@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gaphor xmlns="https://gaphor.org/model" xmlns:Core="https://gaphor.org/modelinglanguage/Core" xmlns:UML="https://gaphor.org/modelinglanguage/UML" version="4" gaphor-version="3.0.0">
+<model>
+<Core:StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed"/>
+<UML:Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
+<name>
+<val>New model</val>
+</name>
+<ownedDiagram>
+<reflist>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</reflist>
+</ownedDiagram>
+</UML:Package>
+<UML:Diagram id="58d6c536-66f8-11ec-b4c8-0456e5e540ed">
+<element>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</element>
+<name>
+<val>New Diagram</val>
+</name>
+</UML:Diagram>
+<UML:ClassDiagram id="f892b1d4-01fe-11f0-a649-c7df03b70e4c">
+<name>
+<val>New Diagram</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="ffd44e0a-01fe-11f0-bb1e-c7df03b70e4c"/>
+<ref refid="f32a9b16-01ff-11f0-b7c1-c7df03b70e4c"/>
+<ref refid="71557917-0200-11f0-92c8-c7df03b70e4c"/>
+</reflist>
+</ownedPresentation>
+</UML:ClassDiagram>
+<UML:Class id="ffd40c81-01fe-11f0-9ebe-c7df03b70e4c">
+<name>
+<val>SuapWebDrive</val>
+</name>
+<note>
+<val>Classe com o setup inicial para o ChromeDriverManager. Funções login e close.
+
+
+Classe Base?
+Necessário extender a classe para usar?
+
+</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="ffd44e0a-01fe-11f0-bb1e-c7df03b70e4c"/>
+</reflist>
+</presentation>
+<specialization>
+<reflist>
+<ref refid="725edbd2-0200-11f0-aeae-c7df03b70e4c"/>
+</reflist>
+</specialization>
+</UML:Class>
+<UML:ClassItem id="ffd44e0a-01fe-11f0-bb1e-c7df03b70e4c">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 78.7265625, 171.0546875)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>123.0</val>
+</width>
+<height>
+<val>57.0</val>
+</height>
+<diagram>
+<ref refid="f892b1d4-01fe-11f0-a649-c7df03b70e4c"/>
+</diagram>
+<subject>
+<ref refid="ffd40c81-01fe-11f0-9ebe-c7df03b70e4c"/>
+</subject>
+</UML:ClassItem>
+<UML:Class id="f32a6b8c-01ff-11f0-951c-c7df03b70e4c">
+<generalization>
+<reflist>
+<ref refid="725edbd2-0200-11f0-aeae-c7df03b70e4c"/>
+</reflist>
+</generalization>
+<name>
+<val>MeuSuapWebDrive</val>
+</name>
+<presentation>
+<reflist>
+<ref refid="f32a9b16-01ff-11f0-b7c1-c7df03b70e4c"/>
+</reflist>
+</presentation>
+</UML:Class>
+<UML:ClassItem id="f32a9b16-01ff-11f0-b7c1-c7df03b70e4c">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 62.226562500000014, 344.921875)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>156.0</val>
+</width>
+<height>
+<val>57.0</val>
+</height>
+<diagram>
+<ref refid="f892b1d4-01fe-11f0-a649-c7df03b70e4c"/>
+</diagram>
+<subject>
+<ref refid="f32a6b8c-01ff-11f0-951c-c7df03b70e4c"/>
+</subject>
+</UML:ClassItem>
+<UML:GeneralizationItem id="71557917-0200-11f0-92c8-c7df03b70e4c">
+<diagram>
+<ref refid="f892b1d4-01fe-11f0-a649-c7df03b70e4c"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="725edbd2-0200-11f0-aeae-c7df03b70e4c"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 138.98597627065794, 225.88279724121094)</val>
+</matrix>
+<points>
+<val>[(1.2405862293420569, 119.03907775878906), (0.0, 2.1718902587890625)]</val>
+</points>
+<head-connection>
+<ref refid="f32a9b16-01ff-11f0-b7c1-c7df03b70e4c"/>
+</head-connection>
+<tail-connection>
+<ref refid="ffd44e0a-01fe-11f0-bb1e-c7df03b70e4c"/>
+</tail-connection>
+</UML:GeneralizationItem>
+<UML:Generalization id="725edbd2-0200-11f0-aeae-c7df03b70e4c">
+<general>
+<ref refid="ffd40c81-01fe-11f0-9ebe-c7df03b70e4c"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="71557917-0200-11f0-92c8-c7df03b70e4c"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="f32a6b8c-01ff-11f0-951c-c7df03b70e4c"/>
+</specific>
+</UML:Generalization>
+</model>
+</gaphor>
