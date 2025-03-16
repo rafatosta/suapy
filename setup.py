@@ -11,7 +11,9 @@ try:
         description=gpaae.__comment__,
         url=gpaae.__website__,
         license='GPLv3+',
-        packages=['gpaae'],
+        packages=['gpaae',
+                  'gpaae.services'
+                  ],
         include_package_data=True,
         package_data={},
         setup_requires=setup_requires,

@@ -6,7 +6,8 @@ Sistema para processamento automatizado de listas de alunos inscritos no PAAE (P
 ## 🚀 Fluxo de Funcionamento
 
 1️⃣ **Usuário seleciona os arquivos:**  
-   - Planilha de inscritos do SUAP (CSV/XLSX)  
+   - Planilha de inscritos do SUAP (CSV/XLSX):
+      - https://suap.ifba.edu.br/ae/relatorio_alunos_inscritos/  
    - Planilha de remoção (CSV/XLSX)  
 
 2️⃣ **O sistema processa os dados:**  
