@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from suapbot.services.CredentialsManager import CredentialsManager
+from suapy.services.CredentialsManager import CredentialsManager
 
 
 class SuapWebDrive:

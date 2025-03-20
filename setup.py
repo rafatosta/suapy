@@ -1,23 +1,23 @@
 from setuptools import setup
-import suapbot
+import suapy
 
 setup_requires = ['setuptools']
 try:
     setup(
-        name=suapbot.__appname__.lower(),
-        version=suapbot.__version__,
-        author=suapbot.__author__,
-        author_email=suapbot.__email__,
-        description=suapbot.__comment__,
-        url=suapbot.__website__,
+        name=suapy.__appname__.lower(),
+        version=suapy.__version__,
+        author=suapy.__author__,
+        author_email=suapy.__email__,
+        description=suapy.__comment__,
+        url=suapy.__website__,
         license='GPLv3+',
-        packages=['suapbot',
-                  'suapbot.services'
+        packages=['suapy',
+                  'suapy.services'
                   ],
         include_package_data=True,
         package_data={},
         setup_requires=setup_requires,
-        entry_points={'gui_scripts': ['suapbot = suapbot.__main__:main']},
+        entry_points={'gui_scripts': ['suapy = suapy.__main__:main']},
         keywords='Simple Zapzap whatsapp client web app',
         classifiers=[
             'Environment :: X11 Applications :: Qt',

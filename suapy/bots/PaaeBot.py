@@ -1,5 +1,5 @@
-from suapbot.services.CredentialsManager import CredentialsManager
-from suapbot.webdrive.SuapWebDrive import SuapWebDrive
+from suapy.services.CredentialsManager import CredentialsManager
+from suapy.webdrive.SuapWebDrive import SuapWebDrive
 
 
 class PaaeBot(SuapWebDrive):

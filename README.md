@@ -1,4 +1,4 @@
-# 📌 SuapExtract
+# 📌 Suapy
 
 ## 📖 Descrição
 Sistema para processamento automatizado de listas de alunos inscritos no PAAE (Plano de Atendimento Educacional Especializado ou Programa de Avaliação da Aprendizagem Escolar). Ele busca os dados bancários dos alunos, aplica a remoção de alunos conforme uma planilha fornecida e gera um relatório final pronto para uso.
@@ -25,34 +25,7 @@ Sistema para processamento automatizado de listas de alunos inscritos no PAAE (P
 
 ✅ **Interface mínima com PyQt6** → Para permitir seleção de arquivos e configurações rápidas.  
 
-## ✅ Checklist de Desenvolvimento
-
-### 🔹 Planejamento
-- [ ] Definir requisitos detalhados.
-- [x] Estruturar o projeto e definir pastas e arquivos.
-- [x] Escolher bibliotecas e dependências necessárias.
-
-### 🔹 Implementação
-- [x] Criar estrutura inicial do projeto.
-- [ ] Implementar automação com Selenium para coleta de dados no SUAP.
-- [ ] Implementar leitura das planilhas de entrada (inscritos e remoção).
-- [ ] Implementar validação dos alunos na lista de remoção.
-- [ ] Implementar remoção de alunos.
-- [ ] Destacar alunos sem dados bancários (opcional).
-- [ ] Implementar geração e salvamento do relatório final.
-- [ ] Implementar abertura automática do relatório no editor padrão.
-- [ ] Criar interface mínima com PyQt6.
-
-### 🔹 Testes e Ajustes
-- [ ] Testar o fluxo completo com arquivos reais.
-- [ ] Corrigir bugs e otimizar o código.
-
-### 🔹 Documentação e Finalização
-- [ ] Criar documentação do sistema.
-- [ ] Criar guia de uso para o usuário.
-- [ ] Preparar versão final para distribuição.
-
-## 🏗️ Execução
+## 🏗️ Execução (Em breve: execução por módulo)
 ```bash
 python run.py
 ```

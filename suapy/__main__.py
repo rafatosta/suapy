@@ -1,4 +1,4 @@
-from suapbot.bots.PaaeBot import PaaeBot
+from suapy.bots.PaaeBot import PaaeBot
 
 
 def main():

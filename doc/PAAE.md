@@ -1,4 +1,4 @@
-# 📌 SuapExtract: PAAE
+# 📌 Suapy: PAAE
 
 ## 📖 Descrição
 Sistema para processamento automatizado de listas de alunos inscritos no PAAE (Plano de Atendimento Educacional Especializado ou Programa de Avaliação da Aprendizagem Escolar). Ele busca os dados bancários dos alunos, aplica a remoção de alunos conforme uma planilha fornecida e gera um relatório final pronto para uso.
