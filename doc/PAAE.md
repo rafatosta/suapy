@@ -1,8 +1,21 @@
-# 📌 SuapExtract
+# 📌 SuapExtract: PAAE
 
 ## 📖 Descrição
 Sistema para processamento automatizado de listas de alunos inscritos no PAAE (Plano de Atendimento Educacional Especializado ou Programa de Avaliação da Aprendizagem Escolar). Ele busca os dados bancários dos alunos, aplica a remoção de alunos conforme uma planilha fornecida e gera um relatório final pronto para uso.
- 
+
+## 🚀 Fluxo de Funcionamento
+
+1️⃣ **Usuário seleciona os arquivos:**  
+   - Planilha de inscritos do SUAP (CSV/XLSX):
+      - https://suap.ifba.edu.br/ae/relatorio_alunos_inscritos/  
+   - Planilha de remoção (CSV/XLSX)  
+
+2️⃣ **O sistema processa os dados:**  
+   - Verifica se todos os alunos na planilha de remoção existem na lista principal.  
+   - Remove os alunos da lista principal.  
+   - Destaca alunos sem dados bancários (opcional).  
+
+3️⃣ **Gera e abre o arquivo final** no editor padrão (Excel, LibreOffice, etc.).  
 
 ## 🔧 Tecnologias Utilizadas
 
