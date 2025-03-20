@@ -23,9 +23,9 @@ if os.path.exists(requirements_file):
     print(f"Instalando dependências de {requirements_file}...")
     subprocess.run([os.path.join(VENV_DIR, "bin", "pip"), "install", "-r", requirements_file])
 else:
-    print(f"Nenhum arquivo {requirements_file} encontrado. Instalando 'gpaae'...")
-    subprocess.run([os.path.join(VENV_DIR, "bin", "pip"), "install", "gpaae"])
+    print(f"Nenhum arquivo {requirements_file} encontrado. Instalando 'suapbot'...")
+    subprocess.run([os.path.join(VENV_DIR, "bin", "pip"), "install", "suapbot"])
 
 # Executar o comando dentro do ambiente virtual
-print("Executando o comando python -m gpaae...")
-subprocess.run([os.path.join(VENV_DIR, "bin", "python"), "-m", "gpaae"])
+print("Executando o comando python -m suapbot...")
+subprocess.run([os.path.join(VENV_DIR, "bin", "python"), "-m", "suapbot"])

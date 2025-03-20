@@ -1,5 +1,5 @@
 __version__ = '1.0'
-__appname__ = 'Gerenciador-PAAE'
+__appname__ = 'SUAP-BOT'
 __comment__ = 'Gerenciamento de alunos do PAAE'
 
 __author__ = 'Rafael Tosta'

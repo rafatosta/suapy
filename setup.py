@@ -1,23 +1,23 @@
 from setuptools import setup
-import gpaae
+import suapbot
 
 setup_requires = ['setuptools']
 try:
     setup(
-        name=gpaae.__appname__.lower(),
-        version=gpaae.__version__,
-        author=gpaae.__author__,
-        author_email=gpaae.__email__,
-        description=gpaae.__comment__,
-        url=gpaae.__website__,
+        name=suapbot.__appname__.lower(),
+        version=suapbot.__version__,
+        author=suapbot.__author__,
+        author_email=suapbot.__email__,
+        description=suapbot.__comment__,
+        url=suapbot.__website__,
         license='GPLv3+',
-        packages=['gpaae',
-                  'gpaae.services'
+        packages=['suapbot',
+                  'suapbot.services'
                   ],
         include_package_data=True,
         package_data={},
         setup_requires=setup_requires,
-        entry_points={'gui_scripts': ['gpaae = gpaae.__main__:main']},
+        entry_points={'gui_scripts': ['suapbot = suapbot.__main__:main']},
         keywords='Simple Zapzap whatsapp client web app',
         classifiers=[
             'Environment :: X11 Applications :: Qt',
