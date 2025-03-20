@@ -1,9 +1,11 @@
-from suapy.bots.PaaeBot import PaaeBot
+
+
+from suapy.extractors.PaaeExtractor import PaaeExtractor
 
 
 def main():
 
-    paae_bot = PaaeBot()
+    paae_bot = PaaeExtractor()
     paae_bot.exec()
 
 
@@ -12,7 +14,7 @@ if __name__ == "__main__":
 
 """
 
-PaaeBot -> Coleta dados para o PAAE
+PaaeExtractor -> Coleta dados para o PAAE
     Entrada: Planilha com estudantes
 
 ConselhoBot -> Coleta dados para o conselho
