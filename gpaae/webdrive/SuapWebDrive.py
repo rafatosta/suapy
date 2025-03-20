@@ -31,14 +31,18 @@ class SuapWebDrive:
             username, password = manager.get_credentials()
             if username and password:
                 self.driver.get(self.url)
-                self.driver.find_element(By.NAME, "username").send_keys(username)
+                self.driver.find_element(
+                    By.NAME, "username").send_keys(username)
                 password_field = self.driver.find_element(By.NAME, "password")
                 password_field.send_keys(password)
                 password_field.submit()
+            else:
+                print("Nenhuma credencial disponível.")
+
         except Exception as e:
             print(f"Erro ao tentar logar: {e}")
             self.close()
-    
+
     def exec(self):
         """Lógica de execução do bot"""
         pass
