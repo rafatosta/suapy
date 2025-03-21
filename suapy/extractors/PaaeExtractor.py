@@ -3,7 +3,6 @@ from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 from suapy.webdrive.SuapWebDrive import SuapWebDrive
 from selenium.webdriver.common.by import By
-import pandas as pd
 
 
 class PaaeExtractor(SuapWebDrive):
@@ -107,13 +106,7 @@ class PaaeExtractor(SuapWebDrive):
             if not (banco and agencia and conta and operacao):
                 lista_sem_conta.append(dados_aluno)
 
-        # Convertendo listas para DataFrame do Pandas
-        df = pd.DataFrame(lista_dados)
-        df_sem_conta = pd.DataFrame(lista_sem_conta)
+        handler.salvar_planilha(lista_dados, "dados_alunos")
+        handler.salvar_planilha(lista_sem_conta, "dados_alunos_sem_conta")
 
-        # Salvando os dados extraídos em arquivos Excel
-        df.to_excel("dados_alunos.xlsx", index=False)
-        df_sem_conta.to_excel("dados_alunos_sem_conta.xlsx", index=False)
-
-        print("✅ Arquivo Excel salvo com sucesso!")
         self.close()
