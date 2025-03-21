@@ -58,7 +58,8 @@ class PlanilhaHandler:
             df = pd.DataFrame(dados)
 
             # Formatar nome do arquivo com data e hora
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime("%Y-%m-%d_%Hh%M")
+
             caminho_completo = os.path.join(
                 self.pasta_relatorios, f"{nome_arquivo}_{timestamp}.xlsx"
             )
