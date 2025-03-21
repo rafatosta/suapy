@@ -1,16 +1,30 @@
+from suapy.services.Alimentacao import Alimentacao
 from suapy.services.Banco import Banco
 from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 from suapy.webdrive.SuapWebDrive import SuapWebDrive
 from selenium.webdriver.common.by import By
 
+from dataclasses import dataclass
+
+
+@dataclass
+class AlimentacaoConfig:
+    data_inicio: str = ""
+    data_fim: str = ""
+
 
 class PaaeExtractor(SuapWebDrive):
     """Classe responsável por extrair dados do SUAP relacionados ao PAAE."""
 
-    def __init__(self, headless=False):
+    def __init__(self, headless=False, alimentacao_config: AlimentacaoConfig = None, arquivo_inscritos="", arquivos_removidos=""):
         """Inicializa o WebDriver."""
         super().__init__(headless=headless)
+
+        self.alimentacao_config = alimentacao_config
+
+        self.arquivo_inscritos = arquivo_inscritos
+        self.arquivos_removidos = arquivos_removidos
 
     def SUAP_INSCRICAO(self, inscricao):
         """Retorna a URL da inscrição do aluno no SUAP."""
@@ -57,7 +71,8 @@ class PaaeExtractor(SuapWebDrive):
     def remover_alunos(self, dados, dados_removidos):
         """Remove alunos da lista de inscritos com base no CPF."""
         # Criando conjunto de CPFs removidos para busca eficiente
-        cpfs_removidos = {aluno["CPF"] for aluno in dados_removidos if "CPF" in aluno}
+        cpfs_removidos = {aluno["CPF"]
+                          for aluno in dados_removidos if "CPF" in aluno}
 
         # Filtrando os alunos que não estão na lista de removidos
         dados_filtrados = [
@@ -68,30 +83,31 @@ class PaaeExtractor(SuapWebDrive):
         print(f"📉 Alunos removidos: {len(dados) - len(dados_filtrados)}")
         return dados_filtrados
 
-
     def exec(self):
         """Executa a extração de dados dos alunos do PAAE e gera relatórios."""
-        print("🔍 Coletando dados PAAE - Sem alimentação")
+        print("🔍 Coletando dados PAAE")
         self.login()
 
-        # Caminho do arquivo com os alunos inscritos
-        alunos_inscritos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos.xls"
-        alunos_removidos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos_removidos.xls"
-
         # Lendo os dados da planilha dos Alunos Inscritos
-        handler = PlanilhaHandler(alunos_inscritos)
+        handler = PlanilhaHandler(self.arquivo_inscritos)
         dados = handler.ler_planilha(header=1)
-        print(f"📊 Total de inscritos: {len(dados)}")
 
-        # Lendo os dados da planilha dos Alunos Inscritos
-        handler = PlanilhaHandler(alunos_removidos)
+        # Lendo os dados da planilha dos Alunos a serem Removidos
+        handler = PlanilhaHandler(self.arquivos_removidos)
         dados_removidos = handler.ler_planilha(header=0)
+
+        print(f"📊 Total de inscritos: {len(dados)}")
         print(
             f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
 
         # Listas para armazenar os dados coletados
         lista_dados = []
         lista_sem_conta = []
+
+        # Para o auxílio alimentação
+        if self.alimentacao_config:
+            pagamento = (self.alimentacao_config.data_inicio,
+                        self.alimentacao_config.data_fim)
 
         # Iteração sobre cada aluno na planilha
         for i, aluno in enumerate(dados, 1):
@@ -125,17 +141,30 @@ class PaaeExtractor(SuapWebDrive):
                 "Tipo de Conta": tipo_conta,
                 "Op.": operacao,
             }
+
+            # Condicional para calcular o valor de alimentação
+            if self.alimentacao_config:
+                valor = Alimentacao.calcular_pagamento(pagamento, periodo)
+
+                # Se o valor for 0, exibe uma mensagem de aviso
+                if valor == 0:
+                    print('\tATENÇÃO: Valor do auxílio alimentação zerado para:',
+                          self.SUAP_MATRICULA(matricula))
+
+                # Adiciona "Alimentação" ao dicionário apenas se o valor for maior que 0
+                if valor > 0:
+                    dados_aluno["Alimentação"] = valor
+
             lista_dados.append(dados_aluno)
 
             # Se os dados bancários estiverem incompletos, adiciona à lista de alunos sem conta
             if not (banco and agencia and conta and operacao):
                 lista_sem_conta.append(dados_aluno)
 
-        
         # Removendo alunos da lista
         lista_dados = self.remover_alunos(lista_dados, dados_removidos)
 
-        handler.salvar_planilha(lista_dados, "dados_alunos")
-        handler.salvar_planilha(lista_sem_conta, "dados_alunos_sem_conta")
+        handler.salvar_planilha(lista_dados, "PAAE:dados_alunos")
+        handler.salvar_planilha(lista_sem_conta, "PAAE:dados_alunos_sem_conta")
 
         self.close()
