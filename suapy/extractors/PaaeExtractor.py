@@ -54,18 +54,40 @@ class PaaeExtractor(SuapWebDrive):
             print(f"Erro ao acessar registro acadêmico ({register_id}): {e}")
             return "", ""
 
+    def remover_alunos(self, dados, dados_removidos):
+        """Remove alunos da lista de inscritos com base no CPF."""
+        # Criando conjunto de CPFs removidos para busca eficiente
+        cpfs_removidos = {aluno["CPF"] for aluno in dados_removidos if "CPF" in aluno}
+
+        # Filtrando os alunos que não estão na lista de removidos
+        dados_filtrados = [
+            aluno for aluno in dados
+            if aluno.get("CPF") not in cpfs_removidos
+        ]
+
+        print(f"📉 Alunos removidos: {len(dados) - len(dados_filtrados)}")
+        return dados_filtrados
+
+
     def exec(self):
         """Executa a extração de dados dos alunos do PAAE e gera relatórios."""
         print("🔍 Coletando dados PAAE - Sem alimentação")
         self.login()
 
         # Caminho do arquivo com os alunos inscritos
-        alunos_inscritos = "/home/tosta/Documentos/GitHub/gerenciador-paae/report.xls"
-        handler = PlanilhaHandler(alunos_inscritos)
+        alunos_inscritos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos.xls"
+        alunos_removidos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos_removidos.xls"
 
-        # Lendo os dados da planilha
+        # Lendo os dados da planilha dos Alunos Inscritos
+        handler = PlanilhaHandler(alunos_inscritos)
         dados = handler.ler_planilha(header=1)
         print(f"📊 Total de inscritos: {len(dados)}")
+
+        # Lendo os dados da planilha dos Alunos Inscritos
+        handler = PlanilhaHandler(alunos_removidos)
+        dados_removidos = handler.ler_planilha(header=0)
+        print(
+            f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
 
         # Listas para armazenar os dados coletados
         lista_dados = []
@@ -76,15 +98,18 @@ class PaaeExtractor(SuapWebDrive):
             print(f"📥 Coletando dados: {i} de {len(dados)}")
 
             # Extração dos dados básicos do aluno
-            nome_principal, nome_secundario, matricula = Parser.extrair_nome_e_matricula(aluno["Nome"])
+            nome_principal, nome_secundario, matricula = Parser.extrair_nome_e_matricula(
+                aluno["Nome"])
             nome_secundario = f"({nome_secundario})" if nome_secundario else ""
 
             # Coletando informações do estudante no SUAP
             cpf, periodo = self.access_student_register(matricula)
-            profile_info = self.access_student_profile(aluno["Numero da Inscrição"])
+            profile_info = self.access_student_profile(
+                aluno["Numero da Inscrição"])
 
             # Extraindo dados bancários
-            banco, agencia, conta, operacao = Parser.extrair_dados_bancarios(profile_info)
+            banco, agencia, conta, operacao = Parser.extrair_dados_bancarios(
+                profile_info)
             tipo_conta = Banco.tipo_de_conta(banco, operacao)
 
             # Montando o dicionário com os dados do aluno
@@ -105,6 +130,10 @@ class PaaeExtractor(SuapWebDrive):
             # Se os dados bancários estiverem incompletos, adiciona à lista de alunos sem conta
             if not (banco and agencia and conta and operacao):
                 lista_sem_conta.append(dados_aluno)
+
+        
+        # Removendo alunos da lista
+        lista_dados = self.remover_alunos(lista_dados, dados_removidos)
 
         handler.salvar_planilha(lista_dados, "dados_alunos")
         handler.salvar_planilha(lista_sem_conta, "dados_alunos_sem_conta")
