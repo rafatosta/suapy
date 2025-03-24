@@ -1,5 +1,5 @@
-from suapy.services.Alimentacao import Alimentacao
-from suapy.services.Banco import Banco
+from suapy.extractors.paae.Alimentacao import Alimentacao
+from suapy.extractors.paae.Banco import Banco
 from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 from suapy.webdrive.SuapWebDrive import SuapWebDrive

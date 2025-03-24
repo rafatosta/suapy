@@ -1,6 +1,6 @@
 
 
-from suapy.extractors.PaaeExtractor import AlimentacaoConfig, PaaeExtractor
+from suapy.extractors.paae.PaaeExtractor import AlimentacaoConfig, PaaeExtractor
 
 
 def main():
