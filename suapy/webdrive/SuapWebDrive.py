@@ -36,8 +36,8 @@ class SuapWebDrive:
                 self.driver.get(self.url)
                 
                 # Preenche e envia o formulário de login
-                self.driver.find_element(By.NAME, "username").send_keys(username)
-                password_field = self.driver.find_element(By.NAME, "password")
+                self.driver.find_element(By.ID, "id_username").send_keys(username)
+                password_field = self.driver.find_element(By.ID, "id_password")
                 password_field.send_keys(password)
                 password_field.submit()
                 
