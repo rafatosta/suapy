@@ -69,15 +69,15 @@ class PaaeExtractor(SuapWebDrive):
             return "", ""
 
     def remover_alunos(self, dados, dados_removidos):
-        """Remove alunos da lista de inscritos com base no CPF."""
+        """Remove alunos da lista de inscritos com base no Nome."""
         # Criando conjunto de CPFs removidos para busca eficiente
-        cpfs_removidos = {aluno["CPF"]
-                          for aluno in dados_removidos if "CPF" in aluno}
+        cpfs_removidos = {aluno["Nome"]
+                          for aluno in dados_removidos if "Nome" in aluno}
 
         # Filtrando os alunos que não estão na lista de removidos
         dados_filtrados = [
             aluno for aluno in dados
-            if aluno.get("CPF") not in cpfs_removidos
+            if aluno.get("Nome") not in cpfs_removidos
         ]
 
         print(f"📉 Alunos removidos: {len(dados) - len(dados_filtrados)}")
