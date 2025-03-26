@@ -14,7 +14,7 @@ class AlimentacaoConfig:
     data_fim: str = ""
 
 
-class PaaeExtractor(SuapWebDrive):
+class PaaeEdital6Extractor(SuapWebDrive):
     """Classe responsável por extrair dados do SUAP relacionados ao PAAE."""
 
     def __init__(self, headless=False, alimentacao_config: AlimentacaoConfig = None, arquivo_inscritos="", arquivos_removidos=""):
@@ -164,7 +164,26 @@ class PaaeExtractor(SuapWebDrive):
         # Removendo alunos da lista
         lista_dados = self.remover_alunos(lista_dados, dados_removidos)
 
-        handler.salvar_planilha(lista_dados, "PAAE:dados_alunos")
-        handler.salvar_planilha(lista_sem_conta, "PAAE:dados_alunos_sem_conta")
+        handler.salvar_planilha(lista_dados, "PAAE:dados_alunos_edital_6")
+        handler.salvar_planilha(lista_sem_conta, "PAAE:dados_alunos_sem_conta_edital_6")
 
         self.close()
+    
+    @staticmethod
+    def main():
+        # Caminho do arquivo com os alunos inscritos
+        alunos_inscritos = "/home/tosta/Documentos/PAAE-Editais/edital_6.xls"
+        alunos_removidos = "/home/tosta/Documentos/PAAE-Editais/edital_6_remover.xls"
+
+        config = AlimentacaoConfig(
+            data_inicio="01/04/2025",
+            data_fim="30/04/2025",
+        )
+
+        paae_bot = PaaeEdital6Extractor(
+            headless=False,
+            arquivo_inscritos=alunos_inscritos,
+            arquivos_removidos=alunos_removidos,
+            alimentacao_config=config
+        )
+        paae_bot.exec()

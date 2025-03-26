@@ -34,21 +34,24 @@ class SuapWebDrive:
 
             if username and password:
                 self.driver.get(self.url)
-                
+
                 # Preenche e envia o formulário de login
-                self.driver.find_element(By.ID, "id_username").send_keys(username)
+                self.driver.find_element(
+                    By.ID, "id_username").send_keys(username)
                 password_field = self.driver.find_element(By.ID, "id_password")
                 password_field.send_keys(password)
                 password_field.submit()
-                
+
                 # 🔹 Aguarda um elemento que indica que o login foi concluído
                 WebDriverWait(self.driver, 15).until(
-                    EC.presence_of_element_located((By.ID, "user-tools"))  # pode mudar
+                    EC.presence_of_element_located(
+                        (By.ID, "user-tools"))  # pode mudar
                 )
 
                 # 🔹 Aguarda o carregamento total do SUAP antes de permitir outras navegações
                 WebDriverWait(self.driver, 10).until(
-                    lambda d: d.execute_script("return document.readyState") == "complete"
+                    lambda d: d.execute_script(
+                        "return document.readyState") == "complete"
                 )
 
                 print("✅ Login realizado e SUAP pronto para navegação!")
@@ -84,7 +87,7 @@ class SuapWebDrive:
                 "return document.readyState") == "complete"
         )
 
-        #print(f"Página carregada: {url}")  # Debug
+        # print(f"Página carregada: {url}")  # Debug
 
     def find_element(self, by, value, timeout=10):
         """
@@ -103,3 +106,8 @@ class SuapWebDrive:
     def close(self):
         """Fecha o navegador."""
         self.driver.quit()
+
+    @staticmethod
+    def main():
+        """Algoritmo para execução do extractor"""
+        pass

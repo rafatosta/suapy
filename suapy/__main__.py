@@ -1,26 +1,10 @@
 
 
-from suapy.extractors.paae.PaaeExtractor import AlimentacaoConfig, PaaeExtractor
+from suapy.extractors.paae.PaaeEdital6Extractor import PaaeEdital6Extractor
 
 
 def main():
-
-    # Caminho do arquivo com os alunos inscritos
-    alunos_inscritos = "/home/tosta/Documentos/PAAE-Editais/edital_6.xls"
-    alunos_removidos = "/home/tosta/Documentos/PAAE-Editais/edital_6_remover.xls"
-
-    config = AlimentacaoConfig(
-        data_inicio="01/04/2025",
-        data_fim="30/04/2025",
-    )
-
-    paae_bot = PaaeExtractor(
-        headless=False,
-        arquivo_inscritos=alunos_inscritos,
-        arquivos_removidos=alunos_removidos,
-        alimentacao_config=config
-    )
-    paae_bot.exec()
+    PaaeEdital6Extractor.main()
 
 
 if __name__ == "__main__":
