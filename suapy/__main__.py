@@ -6,18 +6,19 @@ from suapy.extractors.paae.PaaeExtractor import AlimentacaoConfig, PaaeExtractor
 def main():
 
     # Caminho do arquivo com os alunos inscritos
-    alunos_inscritos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos.xls"
-    alunos_removidos = "/home/tosta/Documentos/GitHub/gerenciador-paae/Lista_alunos_removidos.xls"
+    alunos_inscritos = "/home/tosta/Documentos/PAAE-Editais/edital_6.xls"
+    alunos_removidos = "/home/tosta/Documentos/PAAE-Editais/edital_6_remover.xls"
 
     config = AlimentacaoConfig(
-        data_inicio="01/03/2025",
-        data_fim="01/04/2025",
+        data_inicio="01/04/2025",
+        data_fim="30/04/2025",
     )
 
     paae_bot = PaaeExtractor(
-        headless=True,
+        headless=False,
         arquivo_inscritos=alunos_inscritos,
         arquivos_removidos=alunos_removidos,
+        alimentacao_config=config
     )
     paae_bot.exec()
 
