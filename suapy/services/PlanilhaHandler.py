@@ -15,20 +15,23 @@ class PlanilhaHandler:
         # Garante que a pasta de relatórios existe
         os.makedirs(self.pasta_relatorios, exist_ok=True)
 
-    def ler_planilha(self, header=0) -> list:
+    def ler_planilha(self, header=0, sheet_name=0) -> list:
         """
         Lê a planilha e armazena os dados em um DataFrame.
         Retorna os dados como uma lista de dicionários (orient='records').
         
         Parâmetros:
         - header (int): Índice da linha do cabeçalho.
+        - sheet_name (str | int): Nome ou índice da aba a ser lida.
         """
         try:
-            self.dados_df = pd.read_excel(self.caminho_arquivo, header=header)
-            print("✅ Planilha carregada com sucesso.")
+            self.dados_df = pd.read_excel(self.caminho_arquivo, header=header, sheet_name=sheet_name)
+            print(f"✅ Planilha carregada com sucesso. Aba selecionada: {sheet_name}")
             return self.converter_para_dicionario_records()
         except FileNotFoundError:
             print(f"❌ Erro: O arquivo '{self.caminho_arquivo}' não foi encontrado.")
+        except ValueError as e:
+            print(f"❌ Erro: Aba '{sheet_name}' não encontrada. {e}")
         except Exception as e:
             print(f"❌ Erro ao ler a planilha: {e}")
 
