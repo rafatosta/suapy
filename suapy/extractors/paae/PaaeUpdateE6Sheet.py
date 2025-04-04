@@ -69,10 +69,10 @@ class PaaeUpdateE6Sheet(PaaeEdital6Extractor):
         total_valor = self.soma_total(dados)
         return pd.DataFrame([
             {"Tipo": "Alimentação", "Qtd. Alunos": len(
-                dados), "Valor total": total_valor},
-            {"Tipo": "", "Qtd. Alunos": "", "Valor total": ""},
-            {"Tipo": "", "Qtd. Alunos": "", "Valor total": ""},
-            {"Tipo": "", "Qtd. Alunos": "", "Valor total": total_valor},
+                dados), "Valor individual": Alimentacao.valor_unitario, "Valor total": total_valor},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": ""},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": ""},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": total_valor},
         ])
 
     def exec(self) -> None:
