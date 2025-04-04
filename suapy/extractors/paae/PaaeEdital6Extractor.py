@@ -82,24 +82,6 @@ class PaaeEdital6Extractor(SuapWebDrive):
 
         print(f"📉 Alunos removidos: {len(dados) - len(dados_filtrados)}")
         return dados_filtrados
-    
-    def atualizar_dados_aluno(self, matricula: str, inscricao: str) -> dict:
-        """Coleta e retorna os dados atualizados do aluno a partir dos sistemas internos."""
-        cpf, periodo = self.access_student_register(matricula)
-        profile_info = self.access_student_profile(inscricao)
-
-        banco, agencia, conta, operacao = Parser.extrair_dados_bancarios(profile_info)
-        tipo_conta = Banco.tipo_de_conta(banco, operacao)
-
-        return {
-            "CPF": cpf,
-            "Período": periodo,
-            "Banco": banco,
-            "Agência": agencia,
-            "No da Conta": conta,
-            "Op.": operacao,
-            "Tipo de Conta": tipo_conta
-        }
 
     def exec(self):
         """Executa a extração de dados dos alunos do PAAE e gera relatórios."""
@@ -115,7 +97,8 @@ class PaaeEdital6Extractor(SuapWebDrive):
         dados_removidos = handler.ler_planilha(header=0)
 
         print(f"📊 Total de inscritos: {len(dados)}")
-        print(f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
+        print(
+            f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
 
         # Listas para armazenar os dados coletados
         lista_dados = []
@@ -123,7 +106,8 @@ class PaaeEdital6Extractor(SuapWebDrive):
 
         # Para o auxílio alimentação
         if self.alimentacao_config:
-            pagamento = (self.alimentacao_config.data_inicio, self.alimentacao_config.data_fim)
+            pagamento = (self.alimentacao_config.data_inicio,
+                        self.alimentacao_config.data_fim)
 
         # Iteração sobre cada aluno na planilha
         for i, aluno in enumerate(dados, 1):
@@ -131,35 +115,41 @@ class PaaeEdital6Extractor(SuapWebDrive):
 
             # Extração dos dados básicos do aluno
             nome_principal, nome_secundario, matricula = Parser.extrair_nome_e_matricula(
-                aluno["Nome"]
-            )
+                aluno["Nome"])
             nome_secundario = f"({nome_secundario})" if nome_secundario else ""
 
-            # Atualizando dados do aluno usando o novo método
-            atualizados = self.atualizar_dados_aluno(matricula, aluno["Numero da Inscrição"])
+            # Coletando informações do estudante no SUAP
+            cpf, periodo = self.access_student_register(matricula)
+            profile_info = self.access_student_profile(
+                aluno["Numero da Inscrição"])
+
+            # Extraindo dados bancários
+            banco, agencia, conta, operacao = Parser.extrair_dados_bancarios(
+                profile_info)
+            tipo_conta = Banco.tipo_de_conta(banco, operacao)
 
             # Montando o dicionário com os dados do aluno
             dados_aluno = {
                 "Inscrição": aluno["Numero da Inscrição"],
                 "Matrícula": matricula,
                 "Nome": f"{nome_principal} {nome_secundario}",
-                "Periodo": atualizados["Período"],
-                "CPF": atualizados["CPF"],
-                "Banco": atualizados["Banco"],
-                "Agência": atualizados["Agência"],
-                "No da Conta": atualizados["No da Conta"],
-                "Tipo de Conta": atualizados["Tipo de Conta"],
-                "Op.": atualizados["Op."],
+                "Periodo": periodo,
+                "CPF": cpf,
+                "Banco": banco,
+                "Agência": agencia,
+                "No da Conta": conta,
+                "Tipo de Conta": tipo_conta,
+                "Op.": operacao,
             }
 
             # Condicional para calcular o valor de alimentação
             if self.alimentacao_config:
-                valor = Alimentacao.calcular_pagamento(pagamento, atualizados["Período"])
+                valor = Alimentacao.calcular_pagamento(pagamento, periodo)
 
                 # Se o valor for 0, exibe uma mensagem de aviso
                 if valor == 0:
                     print('\tATENÇÃO: Valor do auxílio alimentação zerado para:',
-                        self.SUAP_MATRICULA(matricula))
+                          self.SUAP_MATRICULA(matricula))
 
                 # Adiciona "Alimentação" ao dicionário apenas se o valor for maior que 0
                 if valor > 0:
@@ -168,7 +158,7 @@ class PaaeEdital6Extractor(SuapWebDrive):
             lista_dados.append(dados_aluno)
 
             # Se os dados bancários estiverem incompletos, adiciona à lista de alunos sem conta
-            if not (atualizados["Banco"] and atualizados["Agência"] and atualizados["No da Conta"] and atualizados["Op."]):
+            if not (banco and agencia and conta and operacao):
                 lista_sem_conta.append(dados_aluno)
 
         # Removendo alunos da lista
@@ -191,7 +181,7 @@ class PaaeEdital6Extractor(SuapWebDrive):
         )
 
         paae_bot = PaaeEdital6Extractor(
-            headless=True,
+            headless=False,
             arquivo_inscritos=alunos_inscritos,
             arquivos_removidos=alunos_removidos,
             alimentacao_config=config

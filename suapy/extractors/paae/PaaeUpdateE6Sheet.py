@@ -24,26 +24,31 @@ class PaaeUpdateE6Sheet(PaaeEdital6Extractor):
 
     def processar_aluno(self, aluno: dict) -> dict:
         """Processa um único aluno e retorna um dicionário com os dados atualizados."""
-        atualizados = self.atualizar_dados_aluno(
-            aluno["Matrícula"], aluno["Inscrição"]
-        )
+        matricula = int(aluno["Matrícula"])
+        inscricao = int(aluno["Inscrição"])
+        nome = aluno["Nome"]
+
+        cpf, periodo = self.access_student_register(matricula)
+        profile_info = self.access_student_profile(inscricao)
+        banco, agencia, conta, operacao = Parser.extrair_dados_bancarios(
+            profile_info)
+        tipo_conta = Banco.tipo_de_conta(banco, operacao)
 
         dados_aluno = {
-            "Inscrição": aluno["Inscrição"],
-            "Matrícula": aluno["Matrícula"],
-            "Nome": aluno["Nome"],
-            "CPF": atualizados["CPF"],
-            "Periodo": atualizados["Período"],
-            "Banco": atualizados["Banco"],
-            "Agência": atualizados["Agência"],
-            "No da Conta": atualizados["No da Conta"],
-            "Op.": atualizados["Op."],
-            "Tipo de Conta": atualizados["Tipo de Conta"],
+            "Inscrição": inscricao,
+            "Matrícula": matricula,
+            "Nome": nome,
+            "Periodo": periodo,
+            "CPF": cpf,
+            "Banco": banco,
+            "Agência": agencia,
+            "No da Conta": conta,
+            "Tipo de Conta": tipo_conta,
+            "Op.": operacao,
         }
 
         if self.alimentacao_config:
-            self.coletar_pagamento_alimentacao(
-                dados_aluno, aluno["Matrícula"], atualizados["Período"])
+            self.coletar_pagamento_alimentacao(dados_aluno, matricula, periodo)
 
         return dados_aluno
 
@@ -65,12 +70,9 @@ class PaaeUpdateE6Sheet(PaaeEdital6Extractor):
         return pd.DataFrame([
             {"Tipo": "Alimentação", "Qtd. Alunos": len(
                 dados), "Valor individual": Alimentacao.valor_unitario, "Valor total": total_valor},
-            {"Tipo": "", "Valor individual": "",
-                "Qtd. Alunos": "", "Valor total": ""},
-            {"Tipo": "", "Valor individual": "",
-                "Qtd. Alunos": "", "Valor total": ""},
-            {"Tipo": "", "Valor individual": "",
-                "Qtd. Alunos": "", "Valor total": total_valor},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": ""},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": ""},
+            {"Tipo": "", "Valor individual": "", "Qtd. Alunos": "", "Valor total": total_valor},
         ])
 
     def exec(self) -> None:
