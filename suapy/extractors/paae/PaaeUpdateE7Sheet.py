@@ -48,8 +48,9 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         }
 
     def montar_listas_especificas(self, lista_geral: list[dict]):
-        """Separa a lista geral em listas por tipo de auxílio, removendo os campos dos auxílios e incluindo o campo Valor."""
-        chaves = ["Alimentacao", "Moradia", "Transporte", "Impressao", "Estudo"]
+        """Separa a lista geral em listas por tipo de auxílio, removendo os campos dos auxílios e incluindo o campo Valor e Total."""
+        chaves = ["Alimentacao", "Moradia",
+                  "Transporte", "Impressao", "Estudo"]
         valores = {
             "Alimentacao": 100,
             "Moradia": 250,
@@ -64,14 +65,21 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             lista = []
             for aluno in lista_geral:
                 if self.is_true(aluno.get(chave, "FALSO")):
-                    aluno_limpo = {k: v for k, v in aluno.items() if k not in chaves}
+                    aluno_limpo = {k: v for k,
+                                   v in aluno.items() if k not in chaves}
                     aluno_limpo["Valor"] = valores[chave]
                     lista.append(aluno_limpo)
+
+            # Adiciona linha de total ao final da lista
+            total = sum(aluno["Valor"] for aluno in lista)
+            lista.append({
+                "Op.": "TOTAL",
+                "Valor": total
+            })
+
             listas_especificas.append(lista)
 
         return tuple(listas_especificas)
-
-
 
     def montar_resumo(
         self,
