@@ -48,14 +48,20 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         }
 
     def montar_listas_especificas(self, lista_geral: list[dict]):
-        """Separa a lista geral em listas por tipo de auxílio."""
-        chaves = ["Alimentacao", "Moradia",
-                  "Transporte", "Impressao", "Estudo"]
-        return tuple([
-            [aluno for aluno in lista_geral if self.is_true(
-                aluno.get(chave, "FALSO"))]
-            for chave in chaves
-        ])
+        """Separa a lista geral em listas por tipo de auxílio, removendo os campos dos auxílios nas listas específicas."""
+        chaves = ["Alimentacao", "Moradia", "Transporte", "Impressao", "Estudo"]
+        listas_especificas = []
+
+        for chave in chaves:
+            lista = []
+            for aluno in lista_geral:
+                if self.is_true(aluno.get(chave, "FALSO")):
+                    aluno_limpo = {k: v for k, v in aluno.items() if k not in chaves}
+                    lista.append(aluno_limpo)
+            listas_especificas.append(lista)
+
+        return tuple(listas_especificas)
+
 
     def montar_resumo(
         self,
