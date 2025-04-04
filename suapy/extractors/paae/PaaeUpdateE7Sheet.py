@@ -1,7 +1,6 @@
 import pandas as pd
 from suapy.extractors.paae.Banco import Banco
 from suapy.extractors.paae.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
-from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 
 
@@ -18,31 +17,29 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         self.arquivo_inscritos = arquivo_inscritos
         self.arquivos_removidos = arquivos_removidos
 
+    def is_true(self, valor) -> bool:
+        if isinstance(valor, (int, float)):
+            return valor != 0
+        if isinstance(valor, bool):
+            return valor
+        return str(valor).strip().upper() == "VERDADEIRO"
+
     def processar_aluno(self, aluno: dict) -> dict:
         """Processa um único aluno e retorna um dicionário com os dados atualizados."""
-        matricula = aluno["Matrícula"]
-        inscricao = aluno["Inscrição"]
-        nome = aluno["Nome"]
-        cpf = aluno.get("CPF")
-        periodo = aluno.get("Período")
+        tipo_conta = Banco.tipo_de_conta(
+            aluno.get("Banco", ""), aluno.get("Op.", ""))
 
-        banco = aluno.get("Banco", "")
-        agencia = aluno.get("Agência", "")
-        conta = aluno.get("No da Conta", "")
-        operacao = aluno.get("Op.", "")
-        tipo_conta = Banco.tipo_de_conta(banco, operacao)
-
-        dados_aluno = {
-            "Inscrição": inscricao,
-            "Matrícula": matricula,
-            "Nome": nome,
-            "Periodo": periodo,
-            "CPF": cpf,
-            "Banco": banco,
-            "Agência": agencia,
-            "No da Conta": conta,
+        return {
+            "Inscrição": aluno["Inscrição"],
+            "Matrícula": aluno["Matrícula"],
+            "Nome": aluno["Nome"],
+            "Periodo": aluno.get("Período"),
+            "CPF": aluno.get("CPF"),
+            "Banco": aluno.get("Banco", ""),
+            "Agência": aluno.get("Agência", ""),
+            "No da Conta": aluno.get("No da Conta", ""),
             "Tipo de Conta": tipo_conta,
-            "Op.": operacao,
+            "Op.": aluno.get("Op.", ""),
             "Alimentacao": self.is_true(aluno.get("Alimentacao", "FALSO")),
             "Moradia": self.is_true(aluno.get("Moradia", "FALSO")),
             "Transporte": self.is_true(aluno.get("Transporte", "FALSO")),
@@ -50,7 +47,15 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             "Estudo": self.is_true(aluno.get("Estudo", "FALSO")),
         }
 
-        return dados_aluno
+    def montar_listas_especificas(self, lista_geral: list[dict]):
+        """Separa a lista geral em listas por tipo de auxílio."""
+        chaves = ["Alimentacao", "Moradia",
+                  "Transporte", "Impressao", "Estudo"]
+        return tuple([
+            [aluno for aluno in lista_geral if self.is_true(
+                aluno.get(chave, "FALSO"))]
+            for chave in chaves
+        ])
 
     def montar_resumo(
         self,
@@ -61,8 +66,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         lista_estudo: list[dict]
     ) -> pd.DataFrame:
         """Gera o DataFrame da aba de resumo com os valores de auxílio."""
-
-        valores_auxilio = {
+        valores = {
             "Alimentacao": 100,
             "Moradia": 250,
             "Transporte": 250,
@@ -70,40 +74,23 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             "Estudo": 500,
         }
 
-        resumo = [
-            {
-                "Tipo": "Alimentacao",
-                "Qtd. Alunos": len(lista_alimentacao),
-                "Valor individual": valores_auxilio["Alimentacao"],
-                "Valor total": len(lista_alimentacao) * valores_auxilio["Alimentacao"],
-            },
-            {
-                "Tipo": "Moradia",
-                "Qtd. Alunos": len(lista_moradia),
-                "Valor individual": valores_auxilio["Moradia"],
-                "Valor total": len(lista_moradia) * valores_auxilio["Moradia"],
-            },
-            {
-                "Tipo": "Transporte",
-                "Qtd. Alunos": len(lista_transporte),
-                "Valor individual": valores_auxilio["Transporte"],
-                "Valor total": len(lista_transporte) * valores_auxilio["Transporte"],
-            },
-            {
-                "Tipo": "Impressão***",
-                "Qtd. Alunos": len(lista_transporte_municipal),
-                "Valor individual": valores_auxilio["Transporte Municipal"],
-                "Valor total": len(lista_transporte_municipal) * valores_auxilio["Transporte Municipal"],
-            },
-            {
-                "Tipo": "Estudo",
-                "Qtd. Alunos": len(lista_estudo),
-                "Valor individual": valores_auxilio["Estudo"],
-                "Valor total": len(lista_estudo) * valores_auxilio["Estudo"],
-            }
-        ]
+        listas = {
+            "Alimentacao": lista_alimentacao,
+            "Moradia": lista_moradia,
+            "Transporte": lista_transporte,
+            "Transporte Municipal": lista_transporte_municipal,
+            "Estudo": lista_estudo
+        }
 
-        total_geral = sum(r["Valor total"] for r in resumo)
+        resumo = [{
+            "Tipo": tipo if tipo != "Transporte Municipal" else "Impressão***",
+            "Qtd. Alunos": len(lista),
+            "Valor individual": valores[tipo],
+            "Valor total": len(lista) * valores[tipo]
+        } for tipo, lista in listas.items()]
+
+        total_geral = sum(item["Valor total"] for item in resumo)
+
         resumo.append({
             "Tipo": "",
             "Qtd. Alunos": "",
@@ -117,43 +104,13 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
                 ",", "X").replace(".", ",").replace("X", ".")
             if isinstance(x, (int, float)) else x
         )
-
         return df
-
-    def montar_listas_especificas(self, lista_geral: list[dict]):
-
-        lista_alimentacao = [aluno for aluno in lista_geral if self.is_true(
-            aluno.get("Alimentacao", "FALSO"))]
-        lista_moradia = [aluno for aluno in lista_geral if self.is_true(
-            aluno.get("Moradia", "FALSO"))]
-        lista_transporte = [aluno for aluno in lista_geral if self.is_true(
-            aluno.get("Transporte", "FALSO"))]
-        lista_impressao = [aluno for aluno in lista_geral if self.is_true(
-            aluno.get("Impressao", "FALSO"))]
-        lista_estudo = [aluno for aluno in lista_geral if self.is_true(
-            aluno.get("Estudo", "FALSO"))]
-
-        return (
-            lista_alimentacao,
-            lista_moradia,
-            lista_transporte,
-            lista_impressao,
-            lista_estudo
-        )
-
-    def is_true(self, valor):
-        if isinstance(valor, (int, float)):
-            return valor != 0
-        if isinstance(valor, bool):
-            return valor is True
-        return str(valor).strip().upper() == "VERDADEIRO"
 
     def exec(self) -> None:
         print("🔍 Atualizando dados PAAE")
 
         handler = PlanilhaHandler(self.arquivo_inscritos)
         dados_planilha = handler.ler_planilha(header=0, sheet_name=1)
-
         print(f"📊 Total de inscritos: {len(dados_planilha)}")
 
         lista_geral = []
@@ -166,40 +123,26 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
                 lista_geral.append(dados_aluno)
 
                 if not all([
-                    dados_aluno.get("Banco"),
-                    dados_aluno.get("Agência"),
-                    dados_aluno.get("No da Conta"),
-                    dados_aluno.get("Op.")
+                    dados_aluno["Banco"],
+                    dados_aluno["Agência"],
+                    dados_aluno["No da Conta"],
+                    dados_aluno["Op."]
                 ]):
                     lista_sem_conta.append(dados_aluno)
 
             except Exception as e:
-                print(
-                    f"❌ [Erro] Atualizando dados: {i} de {len(dados_planilha)} - Campos inválidos!")
+                print(f"❌ [Erro] Linha {i}: Campos inválidos!")
                 print(e)
 
-        (
-            lista_alimentacao,
-            lista_moradia,
-            lista_transporte,
-            lista_impressao,
-            lista_estudo
-        ) = self.montar_listas_especificas(lista_geral)
-
+        listas = self.montar_listas_especificas(lista_geral)
         dados_por_abas = {
-            "Resumo": self.montar_resumo(
-                lista_alimentacao,
-                lista_moradia,
-                lista_transporte,
-                lista_impressao,
-                lista_estudo
-            ),
+            "Resumo": self.montar_resumo(*listas),
             "Alunos": pd.DataFrame(lista_geral),
-            "Alimentacao": pd.DataFrame(lista_alimentacao),
-            "Moradia": pd.DataFrame(lista_moradia),
-            "Transporte": pd.DataFrame(lista_transporte),
-            "Impressao": pd.DataFrame(lista_impressao),
-            "Estudo": pd.DataFrame(lista_estudo),
+            "Alimentacao": pd.DataFrame(listas[0]),
+            "Moradia": pd.DataFrame(listas[1]),
+            "Transporte": pd.DataFrame(listas[2]),
+            "Impressao": pd.DataFrame(listas[3]),
+            "Estudo": pd.DataFrame(listas[4]),
         }
 
         handler.salvar_planilha_por_abas(dados_por_abas, "Planilha_Edital_07")
@@ -209,7 +152,6 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
     @staticmethod
     def main() -> None:
         inscritos_path = "/home/tosta/Documentos/GitHub/suapy/RelatóriosPAAE/Planilha_Edital_07_pagamento_de_Abril_de_2025.xlsx"
-
         paae_bot = PaaeUpdateE7Sheet(
             headless=True,
             arquivo_inscritos=inscritos_path,
