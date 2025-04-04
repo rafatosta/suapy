@@ -1,6 +1,7 @@
 import pandas as pd
 from suapy.extractors.paae.Banco import Banco
 from suapy.extractors.paae.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
+from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 
 
@@ -26,20 +27,21 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
 
     def processar_aluno(self, aluno: dict) -> dict:
         """Processa um único aluno e retorna um dicionário com os dados atualizados."""
-        tipo_conta = Banco.tipo_de_conta(
-            aluno.get("Banco", ""), aluno.get("Op.", ""))
+        atualizados = self.atualizar_dados_aluno(
+            aluno["Matrícula"], aluno["Inscrição"]
+        )
 
         return {
             "Inscrição": aluno["Inscrição"],
             "Matrícula": aluno["Matrícula"],
             "Nome": aluno["Nome"],
-            "Periodo": aluno.get("Período"),
-            "CPF": aluno.get("CPF"),
-            "Banco": aluno.get("Banco", ""),
-            "Agência": aluno.get("Agência", ""),
-            "No da Conta": aluno.get("No da Conta", ""),
-            "Tipo de Conta": tipo_conta,
-            "Op.": aluno.get("Op.", ""),
+            "CPF": atualizados["CPF"],
+            "Periodo": atualizados["Período"],
+            "Banco": atualizados["Banco"],
+            "Agência": atualizados["Agência"],
+            "No da Conta": atualizados["No da Conta"],
+            "Op.": atualizados["Op."],
+            "Tipo de Conta": atualizados["Tipo de Conta"],
             "Alimentacao": self.is_true(aluno.get("Alimentacao", "FALSO")),
             "Moradia": self.is_true(aluno.get("Moradia", "FALSO")),
             "Transporte": self.is_true(aluno.get("Transporte", "FALSO")),
@@ -151,6 +153,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
 
     def exec(self) -> None:
         print("🔍 Atualizando dados PAAE")
+        self.login()
 
         handler = PlanilhaHandler(self.arquivo_inscritos)
         dados_planilha = handler.ler_planilha(header=0, sheet_name=1)
@@ -191,6 +194,8 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         handler.salvar_planilha_por_abas(dados_por_abas, "Planilha_Edital_07")
         handler.salvar_planilha(
             lista_sem_conta, "Planilha_Edital_07_alunos_sem_conta")
+        
+        self.close()
 
     @staticmethod
     def main() -> None:
