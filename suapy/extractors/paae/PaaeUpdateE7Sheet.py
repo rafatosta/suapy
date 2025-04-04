@@ -74,7 +74,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             total = sum(aluno["Valor"] for aluno in lista)
             lista.append({
                 "Op.": "TOTAL",
-                "Valor": total
+                "Valor": f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
             })
 
             listas_especificas.append(lista)
