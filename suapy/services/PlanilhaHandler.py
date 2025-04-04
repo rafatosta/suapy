@@ -19,17 +19,16 @@ class PlanilhaHandler:
         """
         Lê a planilha e armazena os dados em um DataFrame.
         Retorna os dados como uma lista de dicionários (orient='records').
-        
-        Parâmetros:
-        - header (int): Índice da linha do cabeçalho.
-        - sheet_name (str | int): Nome ou índice da aba a ser lida.
         """
         try:
-            self.dados_df = pd.read_excel(self.caminho_arquivo, header=header, sheet_name=sheet_name)
-            print(f"✅ Planilha carregada com sucesso. Aba selecionada: {sheet_name}")
+            self.dados_df = pd.read_excel(
+                self.caminho_arquivo, header=header, sheet_name=sheet_name)
+            print(
+                f"✅ Planilha carregada com sucesso. Aba selecionada: {sheet_name}")
             return self.converter_para_dicionario_records()
         except FileNotFoundError:
-            print(f"❌ Erro: O arquivo '{self.caminho_arquivo}' não foi encontrado.")
+            print(
+                f"❌ Erro: O arquivo '{self.caminho_arquivo}' não foi encontrado.")
         except ValueError as e:
             print(f"❌ Erro: Aba '{sheet_name}' não encontrada. {e}")
         except Exception as e:
@@ -42,17 +41,14 @@ class PlanilhaHandler:
                 print("🔄 Conversão para dicionário (records) realizada com sucesso.")
                 return self.dados_df.to_dict(orient="records")
             else:
-                raise Exception("⚠️ Você precisa carregar a planilha primeiro.")
+                raise Exception(
+                    "⚠️ Você precisa carregar a planilha primeiro.")
         except Exception as e:
             print(f"❌ Erro ao converter para dicionário (records): {e}")
 
     def salvar_planilha(self, dados, nome_arquivo):
         """
         Salva os dados em um arquivo Excel dentro da pasta 'Relatórios'.
-        
-        Parâmetros:
-        - dados (list[dict]): Lista de dicionários com os dados a serem salvos.
-        - nome_arquivo (str): Nome base do arquivo sem extensão.
         """
         try:
             if not dados:
@@ -85,3 +81,60 @@ class PlanilhaHandler:
                 print("📑 Impressão tabulada (records) realizada com sucesso.")
         except Exception as e:
             print(f"❌ Erro ao imprimir tabulado (records): {e}")
+
+    def salvar_planilha_por_abas(self, data_dict, nome_arquivo):
+        """
+        Salva um dicionário de DataFrames em um arquivo Excel, onde cada chave do dicionário
+        representa o nome da aba e o valor é um DataFrame correspondente.
+        """
+        try:
+
+            # Formatar nome do arquivo com data e hora
+            timestamp = datetime.now().strftime("%Y-%m-%d_%Hh%M")
+            caminho_completo = os.path.join(
+                self.pasta_relatorios, f"{nome_arquivo}_{timestamp}.xlsx"
+            )
+
+            with pd.ExcelWriter(caminho_completo, engine='xlsxwriter') as writer:
+                for sheet_name, df in data_dict.items():
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+            print(f"✅ Planilha salva com sucesso em: {caminho_completo}")
+        except Exception as e:
+            print(f"❌ Erro ao salvar planilha por abas: {e}")
+
+    def atualizar_planilha(self, novos_dados, sheet_name):
+        """
+        Atualiza os dados de uma aba específica da planilha existente.
+        Salva a nova versão diretamente na pasta de relatórios.
+        """
+        try:
+            if not novos_dados:
+                raise ValueError("⚠️ Nenhum dado para atualizar.")
+
+            # Caminho para salvar a nova planilha
+            novo_caminho = os.path.join(
+                self.pasta_relatorios, os.path.basename(self.caminho_arquivo))
+            os.makedirs(self.pasta_relatorios, exist_ok=True)
+
+            # Lê todas as abas existentes
+            with pd.ExcelFile(self.caminho_arquivo) as xls:
+                planilhas = {nome: pd.read_excel(
+                    xls, sheet_name=nome) for nome in xls.sheet_names}
+
+            # Atualiza apenas a aba específica
+            planilhas[sheet_name] = pd.DataFrame(novos_dados)
+
+            # Salva todas as abas no novo arquivo Excel
+            self.salvar_planilha_por_abas(
+                planilhas, os.path.basename(self.caminho_arquivo))
+
+            print(
+                f"✅ Aba '{sheet_name}' atualizada com sucesso em '{novo_caminho}'.")
+
+        except FileNotFoundError:
+            print(
+                f"❌ Erro: O arquivo '{self.caminho_arquivo}' não foi encontrado.")
+        except KeyError:
+            print(f"❌ Erro: A aba '{sheet_name}' não existe na planilha.")
+        except Exception as e:
+            print(f"❌ Erro ao atualizar a planilha: {e}")
