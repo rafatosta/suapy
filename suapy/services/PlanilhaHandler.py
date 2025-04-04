@@ -85,19 +85,30 @@ class PlanilhaHandler:
     def salvar_planilha_por_abas(self, data_dict, nome_arquivo):
         """
         Salva um dicionário de DataFrames em um arquivo Excel, onde cada chave do dicionário
-        representa o nome da aba e o valor é um DataFrame correspondente.
+        representa o nome da aba e o valor é um DataFrame correspondente, ajustando a largura das colunas.
         """
         try:
-
             # Formatar nome do arquivo com data e hora
             timestamp = datetime.now().strftime("%Y-%m-%d_%Hh%M")
             caminho_completo = os.path.join(
                 self.pasta_relatorios, f"{nome_arquivo}_{timestamp}.xlsx"
             )
-
             with pd.ExcelWriter(caminho_completo, engine='xlsxwriter') as writer:
                 for sheet_name, df in data_dict.items():
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+                    # Ajuste das larguras das colunas
+                    workbook = writer.book
+                    worksheet = writer.sheets[sheet_name]
+
+                    for idx, col in enumerate(df.columns):
+                        # Obtém o tamanho máximo entre o nome da coluna e os valores da coluna
+                        col_width = max(
+                            df[col].astype(str).map(len).max(),
+                            len(col)
+                        ) + 2  # Adiciona margem
+                        worksheet.set_column(idx, idx, col_width)
+
             print(f"✅ Planilha salva com sucesso em: {caminho_completo}")
         except Exception as e:
             print(f"❌ Erro ao salvar planilha por abas: {e}")
