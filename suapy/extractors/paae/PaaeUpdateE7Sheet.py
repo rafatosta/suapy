@@ -90,7 +90,8 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         lista_estudo: list[dict]
     ) -> pd.DataFrame:
         """Gera o DataFrame da aba de resumo com os valores de auxílio."""
-        valores = {
+
+        valores_auxilio = {
             "Alimentacao": 100,
             "Moradia": 250,
             "Transporte": 250,
@@ -98,23 +99,40 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             "Estudo": 500,
         }
 
-        listas = {
-            "Alimentacao": lista_alimentacao,
-            "Moradia": lista_moradia,
-            "Transporte": lista_transporte,
-            "Transporte Municipal": lista_transporte_municipal,
-            "Estudo": lista_estudo
-        }
+        resumo = [
+            {
+                "Tipo": "Alimentacao",
+                "Qtd. Alunos": len(lista_alimentacao) - 1,
+                "Valor individual": valores_auxilio["Alimentacao"],
+                "Valor total": (len(lista_alimentacao) - 1) * valores_auxilio["Alimentacao"],
+            },
+            {
+                "Tipo": "Moradia",
+                "Qtd. Alunos": len(lista_moradia) - 1,
+                "Valor individual": valores_auxilio["Moradia"],
+                "Valor total": (len(lista_moradia) - 1) * valores_auxilio["Moradia"],
+            },
+            {
+                "Tipo": "Transporte",
+                "Qtd. Alunos": len(lista_transporte) - 1,
+                "Valor individual": valores_auxilio["Transporte"],
+                "Valor total": (len(lista_transporte) - 1) * valores_auxilio["Transporte"],
+            },
+            {
+                "Tipo": "Impressão***",
+                "Qtd. Alunos": len(lista_transporte_municipal) - 1,
+                "Valor individual": valores_auxilio["Transporte Municipal"],
+                "Valor total": (len(lista_transporte_municipal) - 1) * valores_auxilio["Transporte Municipal"],
+            },
+            {
+                "Tipo": "Estudo",
+                "Qtd. Alunos": len(lista_estudo) - 1,
+                "Valor individual": valores_auxilio["Estudo"],
+                "Valor total": (len(lista_estudo) - 1) * valores_auxilio["Estudo"],
+            }
+        ]
 
-        resumo = [{
-            "Tipo": tipo if tipo != "Transporte Municipal" else "Impressão***",
-            "Qtd. Alunos": len(lista),
-            "Valor individual": valores[tipo],
-            "Valor total": len(lista) * valores[tipo]
-        } for tipo, lista in listas.items()]
-
-        total_geral = sum(item["Valor total"] for item in resumo)
-
+        total_geral = sum(r["Valor total"] for r in resumo)
         resumo.append({
             "Tipo": "",
             "Qtd. Alunos": "",
@@ -124,11 +142,12 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
 
         df = pd.DataFrame(resumo)
         df["Valor total"] = df["Valor total"].apply(
-            lambda x: f"R$ {x:,.2f}".replace(
-                ",", "X").replace(".", ",").replace("X", ".")
+            lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
             if isinstance(x, (int, float)) else x
         )
+
         return df
+
 
     def exec(self) -> None:
         print("🔍 Atualizando dados PAAE")
