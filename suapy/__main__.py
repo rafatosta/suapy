@@ -1,10 +1,16 @@
-from suapy.extractors.paae.PaaeUpdateE6Sheet import PaaeUpdateE6Sheet
+
+
+from suapy.extractors.paae.PaaeUpdateE7BuildSheet import PaaeUpdateE7BuildSheet
+from suapy.extractors.paae.PaaeUpdateE7Sheet import PaaeUpdateE7Sheet
 
 
 def main():
     #PaaeEdital6Extractor.main()
 
-    PaaeUpdateE6Sheet.main()
+    #PaaeUpdateE6Sheet.main()
+    #PaaeUpdateE7BuildSheet.main()
+
+    PaaeUpdateE7Sheet.main()
 
 
 if __name__ == "__main__":

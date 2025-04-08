@@ -33,29 +33,29 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
             "Inscrição": aluno["Inscrição"],
             "Matrícula": aluno["Matrícula"],
             "Nome": aluno["Nome"],
-            "Periodo": aluno.get("Período"),
+            "Período": aluno.get("Período"),
             "CPF": aluno.get("CPF"),
             "Banco": aluno.get("Banco", ""),
             "Agência": aluno.get("Agência", ""),
-            "No da Conta": aluno.get("No da Conta", ""),
+            "Número da Conta": aluno.get("Número da Conta", ""),
             "Tipo de Conta": tipo_conta,
             "Op.": aluno.get("Op.", ""),
-            "Alimentacao": self.is_true(aluno.get("Alimentacao", "FALSO")),
+            "Alimentação": self.is_true(aluno.get("Alimentação", "FALSO")),
             "Moradia": self.is_true(aluno.get("Moradia", "FALSO")),
             "Transporte": self.is_true(aluno.get("Transporte", "FALSO")),
-            "Impressao": self.is_true(aluno.get("Impressao", "FALSO")),
+            "Transporte Municipal": self.is_true(aluno.get("Transporte Municipal", "FALSO")),
             "Estudo": self.is_true(aluno.get("Estudo", "FALSO")),
         }
 
     def montar_listas_especificas(self, lista_geral: list[dict]):
         """Separa a lista geral em listas por tipo de auxílio, removendo os campos dos auxílios e incluindo o campo Valor e Total."""
-        chaves = ["Alimentacao", "Moradia",
-                  "Transporte", "Impressao", "Estudo"]
+        chaves = ["Alimentação", "Moradia",
+                  "Transporte", "Transporte Municipal", "Estudo"]
         valores = {
-            "Alimentacao": 100,
+            "Alimentação": 100,
             "Moradia": 250,
             "Transporte": 250,
-            "Impressao": 200,  # Representa "Transporte Municipal"
+            "Transporte Municipal": 200, 
             "Estudo": 500,
         }
 
@@ -92,7 +92,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         """Gera o DataFrame da aba de resumo com os valores de auxílio."""
 
         valores_auxilio = {
-            "Alimentacao": 100,
+            "Alimentação": 100,
             "Moradia": 250,
             "Transporte": 250,
             "Transporte Municipal": 200,
@@ -101,10 +101,10 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
 
         resumo = [
             {
-                "Tipo": "Alimentacao",
+                "Tipo": "Alimentação",
                 "Qtd. Alunos": len(lista_alimentacao) - 1,
-                "Valor individual": valores_auxilio["Alimentacao"],
-                "Valor total": (len(lista_alimentacao) - 1) * valores_auxilio["Alimentacao"],
+                "Valor individual": valores_auxilio["Alimentação"],
+                "Valor total": (len(lista_alimentacao) - 1) * valores_auxilio["Alimentação"],
             },
             {
                 "Tipo": "Moradia",
@@ -119,7 +119,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
                 "Valor total": (len(lista_transporte) - 1) * valores_auxilio["Transporte"],
             },
             {
-                "Tipo": "Impressão***",
+                "Tipo": "Transporte Municipal",
                 "Qtd. Alunos": len(lista_transporte_municipal) - 1,
                 "Valor individual": valores_auxilio["Transporte Municipal"],
                 "Valor total": (len(lista_transporte_municipal) - 1) * valores_auxilio["Transporte Municipal"],
@@ -153,7 +153,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         print("🔍 Atualizando dados PAAE")
 
         handler = PlanilhaHandler(self.arquivo_inscritos)
-        dados_planilha = handler.ler_planilha(header=0, sheet_name=1)
+        dados_planilha = handler.ler_planilha(header=0)
         print(f"📊 Total de inscritos: {len(dados_planilha)}")
 
         lista_geral = []
@@ -168,7 +168,7 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
                 if not all([
                     dados_aluno["Banco"],
                     dados_aluno["Agência"],
-                    dados_aluno["No da Conta"],
+                    dados_aluno["Número da Conta"],
                     dados_aluno["Op."]
                 ]):
                     lista_sem_conta.append(dados_aluno)
@@ -181,10 +181,10 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
         dados_por_abas = {
             "Resumo": self.montar_resumo(*listas),
             "Alunos": pd.DataFrame(lista_geral),
-            "Alimentacao": pd.DataFrame(listas[0]),
+            "Alimentação": pd.DataFrame(listas[0]),
             "Moradia": pd.DataFrame(listas[1]),
             "Transporte": pd.DataFrame(listas[2]),
-            "Impressao": pd.DataFrame(listas[3]),
+            "Transporte Municipal": pd.DataFrame(listas[3]),
             "Estudo": pd.DataFrame(listas[4]),
         }
 
@@ -194,7 +194,8 @@ class PaaeUpdateE7Sheet(PaaeEdital6Extractor):
 
     @staticmethod
     def main() -> None:
-        inscritos_path = "/home/tosta/Documentos/GitHub/suapy/RelatóriosPAAE/Planilha_Edital_07_pagamento_de_Abril_de_2025.xlsx"
+        #inscritos_path = "/home/tosta/Documentos/GitHub/suapy/RelatóriosPAAE/Planilha_Edital_07_pagamento_de_Abril_de_2025.xlsx"
+        inscritos_path = "/home/tosta/Documentos/GitHub/suapy/aba_geral_auxilios.xlsx"
         paae_bot = PaaeUpdateE7Sheet(
             headless=True,
             arquivo_inscritos=inscritos_path,
