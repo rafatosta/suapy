@@ -174,3 +174,4 @@ cython_debug/
 *.xls
 *.xlsx
 *.xlsx#
+*.ods
