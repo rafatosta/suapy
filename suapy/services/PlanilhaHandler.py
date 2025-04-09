@@ -48,7 +48,8 @@ class PlanilhaHandler:
 
     def salvar_planilha(self, dados, nome_arquivo):
         """
-        Salva os dados em um arquivo Excel dentro da pasta 'Relatórios'.
+        Salva os dados em um arquivo Excel dentro da pasta 'Relatórios',
+        ajustando automaticamente a largura das colunas.
         """
         try:
             if not dados:
@@ -58,12 +59,24 @@ class PlanilhaHandler:
 
             # Formatar nome do arquivo com data e hora
             timestamp = datetime.now().strftime("%Y-%m-%d_%Hh%M")
-
             caminho_completo = os.path.join(
                 self.pasta_relatorios, f"{nome_arquivo}_{timestamp}.xlsx"
             )
 
-            df.to_excel(caminho_completo, index=False)
+            with pd.ExcelWriter(caminho_completo, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name='Planilha')
+
+                # Ajustar a largura das colunas
+                workbook = writer.book
+                worksheet = writer.sheets['Planilha']
+
+                for idx, col in enumerate(df.columns):
+                    col_width = max(
+                        df[col].astype(str).map(len).max(),
+                        len(col)
+                    ) + 2  # margem extra
+                    worksheet.set_column(idx, idx, col_width)
+
             print(f"✅ Planilha salva com sucesso em: {caminho_completo}")
 
         except Exception as e:
