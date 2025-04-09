@@ -46,7 +46,7 @@ class PlanilhaHandler:
         except Exception as e:
             print(f"❌ Erro ao converter para dicionário (records): {e}")
 
-    def salvar_planilha(self, dados, nome_arquivo):
+    def salvar_planilha(self, dados, nome_arquivo, colunas_finais=None):
         """
         Salva os dados em um arquivo Excel dentro da pasta 'Relatórios',
         ajustando automaticamente a largura das colunas.
@@ -54,8 +54,12 @@ class PlanilhaHandler:
         try:
             if not dados:
                 raise ValueError("⚠️ Nenhum dado para salvar.")
-
+            
             df = pd.DataFrame(dados)
+
+            if colunas_finais:
+                df = df[colunas_finais]
+
 
             # Formatar nome do arquivo com data e hora
             timestamp = datetime.now().strftime("%Y-%m-%d_%Hh%M")
