@@ -53,8 +53,7 @@ class PaaeParserEdital7BuildAlunos(PaaeEdital6Extractor):
         Returns:
             dict: Contendo os dados obtidos, campos vazios e (se aplicável) diferenças
         """
-        print(
-            f"{inscricao_1} ({type(inscricao_1)}), {inscricao_2} ({type(inscricao_2)})")
+        
         if not callable(getDadosBancarios):
             raise TypeError(
                 "O parâmetro 'getDadosBancarios' precisa ser uma função.")
