@@ -145,8 +145,8 @@ class PaaeParserEdital7BuildAlunos(PaaeEdital6Extractor):
                 aluno["Banco"] = resultado["dados_preferido"].get("banco", "")
                 aluno["Agência"] = resultado["dados_preferido"].get(
                     "agencia", "")
-                aluno["Conta"] = resultado["dados_preferido"].get("conta", "")
-                aluno["Operação"] = resultado["dados_preferido"].get(
+                aluno["Número da Conta"] = resultado["dados_preferido"].get("conta", "")
+                aluno["Op."] = resultado["dados_preferido"].get(
                     "operacao", "")
                 aluno["Tipo Conta"] = resultado["dados_preferido"].get(
                     "tipo_conta", "")
