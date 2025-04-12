@@ -1,5 +1,5 @@
-from suapy.extractors.paae.Alimentacao import Alimentacao
-from suapy.extractors.paae.Banco import Banco
+from suapy.extractors.paae.services.Alimentacao import Alimentacao
+from suapy.extractors.paae.services.Banco import Banco
 from suapy.services.Parser import Parser
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 from suapy.webdrive.SuapWebDrive import SuapWebDrive
@@ -97,8 +97,9 @@ class PaaeEdital6Extractor(SuapWebDrive):
         dados_removidos = handler.ler_planilha(header=0)
 
         print(f"📊 Total de inscritos: {len(dados)}")
-        print(
-            f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
+        if dados_removidos:
+            print(
+                f"📊 Total de inscritos a serem removidos: {len(dados_removidos)}")
 
         # Listas para armazenar os dados coletados
         lista_dados = []
@@ -162,7 +163,8 @@ class PaaeEdital6Extractor(SuapWebDrive):
                 lista_sem_conta.append(dados_aluno)
 
         # Removendo alunos da lista
-        lista_dados = self.remover_alunos(lista_dados, dados_removidos)
+        if dados_removidos:
+            lista_dados = self.remover_alunos(lista_dados, dados_removidos)
 
         handler.salvar_planilha(lista_dados, "PAAE:dados_alunos_edital_6")
         handler.salvar_planilha(lista_sem_conta, "PAAE:dados_alunos_sem_conta_edital_6")
@@ -172,8 +174,8 @@ class PaaeEdital6Extractor(SuapWebDrive):
     @staticmethod
     def main():
         # Caminho do arquivo com os alunos inscritos
-        alunos_inscritos = "/home/tosta/Documentos/PAAE-Editais/edital_6.xls"
-        alunos_removidos = "/home/tosta/Documentos/PAAE-Editais/edital_6_remover.xls"
+        alunos_inscritos = "/home/tosta/Documentos/GitHub/suapy/Editais/Edital_6_Inscrições.xls"
+        alunos_removidos = ""
 
         config = AlimentacaoConfig(
             data_inicio="01/04/2025",
