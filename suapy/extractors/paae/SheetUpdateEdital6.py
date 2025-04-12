@@ -32,11 +32,19 @@ class SheetUpdateEdital6(PaaeEdital6Extractor):
             profile_info)
         tipo_conta = Banco.tipo_de_conta(banco, operacao)
 
+        nome_curso = ""
+        if "0012" in curso:
+            nome_curso = "Edificações"
+        elif "0022" in curso:
+            nome_curso = "Informática"
+        else:
+            nome_curso = "Curso inexistente"
+
         dados_aluno = {
             "Inscrição": inscricao,
             "Matrícula": matricula,
             "Nome": nome,
-            "Curso": curso,
+            "Curso": nome_curso,
             "Periodo": periodo,
             "CPF": cpf,
             "Banco": banco,
@@ -103,7 +111,7 @@ class SheetUpdateEdital6(PaaeEdital6Extractor):
         inscritos_path = "/home/tosta/Documentos/GitHub/suapy/Planilhas-Atuais/Planilha_Edital_06.2024_abril_2025_ajustado(FIX).xlsx"
 
         config = AlimentacaoConfig(
-            data_inicio="01/04/2025",
+            data_inicio="02/04/2025",
             data_fim="30/04/2025",
         )
 
