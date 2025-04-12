@@ -62,7 +62,11 @@ class PaaeEdital6Extractor(SuapWebDrive):
                 By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/table/tbody/tr[4]/td[2]'
             ).text
 
-            return cpf, periodo
+            curso = self.find_element(
+                By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/table/tbody/tr[5]/td[2]'
+            ).text
+
+            return cpf, periodo, curso
 
         except Exception as e:
             print(f"Erro ao acessar registro acadêmico ({register_id}): {e}")
@@ -108,7 +112,7 @@ class PaaeEdital6Extractor(SuapWebDrive):
         # Para o auxílio alimentação
         if self.alimentacao_config:
             pagamento = (self.alimentacao_config.data_inicio,
-                        self.alimentacao_config.data_fim)
+                         self.alimentacao_config.data_fim)
 
         # Iteração sobre cada aluno na planilha
         for i, aluno in enumerate(dados, 1):
@@ -167,10 +171,11 @@ class PaaeEdital6Extractor(SuapWebDrive):
             lista_dados = self.remover_alunos(lista_dados, dados_removidos)
 
         handler.salvar_planilha(lista_dados, "PAAE:dados_alunos_edital_6")
-        handler.salvar_planilha(lista_sem_conta, "PAAE:dados_alunos_sem_conta_edital_6")
+        handler.salvar_planilha(
+            lista_sem_conta, "PAAE:dados_alunos_sem_conta_edital_6")
 
         self.close()
-    
+
     @staticmethod
     def main():
         # Caminho do arquivo com os alunos inscritos
