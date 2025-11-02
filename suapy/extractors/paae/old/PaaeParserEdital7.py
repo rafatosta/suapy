@@ -1,5 +1,5 @@
 import pandas as pd
-from suapy.extractors.paae.PaaeEdital6Extractor import PaaeEdital6Extractor
+from suapy.extractors.paae.old.PaaeEdital6Extractor import PaaeEdital6Extractor
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 
 

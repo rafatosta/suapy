@@ -1,6 +1,6 @@
 
 
-from suapy.extractors.paae.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
+from suapy.extractors.paae.old.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
 from suapy.extractors.paae.services.Alimentacao import Alimentacao
 from suapy.extractors.paae.services.Banco import Banco
 from suapy.services.Parser import Parser

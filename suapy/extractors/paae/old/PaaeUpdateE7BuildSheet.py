@@ -1,6 +1,6 @@
 import pandas as pd
 from suapy.extractors.paae.Banco import Banco
-from suapy.extractors.paae.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
+from suapy.extractors.paae.old.PaaeEdital6Extractor import AlimentacaoConfig, PaaeEdital6Extractor
 from suapy.services.PlanilhaHandler import PlanilhaHandler
 
 
