@@ -1,8 +1,11 @@
 from suapy.extractors.paae.PaaeExtractor import PaaeExtractor
+from suapy.extractors.paae.PaaeExtractorComAlimentacao import PaaeExtractorComAlimentacao
 
 
 def main():
-    PaaeExtractor.main()
+    #PaaeExtractor.main()
+
+    PaaeExtractorComAlimentacao.main()
 
 if __name__ == "__main__":
     main()
