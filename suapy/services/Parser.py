@@ -8,7 +8,7 @@ class Parser:
         "Exemplo: Fulano de tal (12345612)"
 
         # Expressão regular para capturar nome e matrícula
-        pattern = r"([A-Za-zÀ-ÖØ-öø-ÿ\s]+)\s*(?:\(([A-Za-zÀ-ÖØ-öø-ÿ\s]+)\))?\s*\((\d+)\)"
+        pattern = r"([A-Za-zÀ-ÖØ-öø-ÿ\s]+)\s*(?:\(([^()]*)\))?\s*\(([A-Za-z0-9]+)\)"
 
         # Aplicando o regex
         match = re.match(pattern, string)
